@@ -134,4 +134,16 @@ public class ProductServiceImpl implements ProductService {
         modelMap.addAttribute("tbProductCategories",tbProductCategorysData);
         modelMap.addAttribute("parentId",productCategoryId);
     }
+    @Override
+    public void insertProductList(List<TbProduct> list) {
+        try{
+            if(!CollectionUtils.isEmpty(list)){
+                for (TbProduct tbProduct : list) {
+                    productMapper.insertSelective(tbProduct);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

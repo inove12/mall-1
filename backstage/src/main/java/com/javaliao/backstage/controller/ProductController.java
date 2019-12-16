@@ -104,5 +104,34 @@ public class ProductController extends BaseController {
         productService.getProductCategoryTwoById(productCategoryId, modelMap);
         return "productCategory/listTwo";
     }
+    @ApiOperation("导入商品数据")
+    @PostMapping("/upload")
+    public String uploadNew(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
+        try {
+            Map<String, Object> result = EasyExcelUtil.readExcel(file, new ProductVo(), 1);
+            Boolean flag = (Boolean) result.get("flag");
+            if (flag) {
+                List<Object> list = (List<Object>) result.get("datas");
+                if (!CollectionUtils.isEmpty(list)) {
+                    //toDo  这个测试一下可不可以删除
+                    List<ProductVo> productVos = list.stream().map(o -> {
+                        ProductVo productVo = new ProductVo();
+                        BeanUtil.copyProperties(o, productVo);
+                        return productVo;
+                    }).collect(Collectors.toList());
 
+                    List<TbProduct> products = productVos.stream().map(productVo -> {
+                        TbProduct tbProduct = new TbProduct();
+                        BeanUtil.copyProperties(productVo, tbProduct);
+                        return tbProduct;
+                    }).collect(Collectors.toList());
+                    productService.insertProductList(products);
+                }
+            }
+            return "product/list";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error/exceptionCatch.ftl";
+        }
+    }
 }

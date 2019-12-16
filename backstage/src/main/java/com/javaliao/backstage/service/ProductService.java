@@ -29,4 +29,6 @@ public interface ProductService {
     void insertProductCategory(TbProductCategory tbProductCategory) throws Exception;
 
     void getProductCategoryTwoById(String productCategoryId, ModelMap modelMap);
+
+    void insertProductList(List<TbProduct> list);
 }
